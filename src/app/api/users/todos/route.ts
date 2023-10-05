@@ -1,21 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { cookies } from 'next/headers'
-
-
 const prisma = new PrismaClient();
-
-
-   
 
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const { title, content } = await req.json();
 
-    const cookiesList = cookies()
-    const hasCookie = cookiesList.get('ID')
+    const username = req.cookies.get('username')?.value
 
-    console.log(hasCookie)
+    const user = await prisma.user.findFirst({
+      where: {
+      username: username // Match based on the username
+      }
+    });
 
     // Define the type for the data
     const todoData = {
@@ -23,7 +20,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       content,
       user: {
         connect: {
-            id: "cln1mk2o50004052ebwyc7bkb"
+            id: user?.id
         }
       }
     };
@@ -37,9 +34,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
       message: "Todo added successfully",
       success: true,
       data: newTodo, // Optionally return the created todo
+      id: newTodo.id 
     });
-
-    console.log(todoData);
 
     return response;
   } catch (error: any) {
@@ -61,6 +57,61 @@ export async function GET() {
   }
 }
 
-export async function PUT(req: CustomNextRequest) {
-  
+export async function PUT(req: NextRequest) {
+  try {
+    const { newTitle, newContent, todoId } = await req.json();
+
+    const todo = await prisma.task.findFirst({
+      where: {
+        id: todoId,
+      }
+    })
+
+    if (!todo) {
+      throw new Error('Todo not found or does not belong to this user');
+    }
+
+    // Update the todo
+    const updateData = await prisma.task.update({
+      where: {
+        id: todoId
+      }, 
+      data: {
+        title: {
+          set: newTitle 
+        },
+        content: {
+          set: newContent
+        }
+      }
+    });
+
+    return NextResponse.json({
+      message: 'Todo updated successfully',
+      success: true,
+      data: updateData
+    });  
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { todoId } = await req.json();
+
+    const deleteTodo = await prisma.task.delete({
+      where: {
+        id: todoId,
+      },
+    });
+
+    return NextResponse.json({
+      message: 'Todo deleted successfully',
+      success: true,
+      data: deleteTodo
+    });  
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 }); 
+  }
 }

@@ -3,7 +3,6 @@ import Link from "next/link";
 import axios from "axios";
 import React from "react";
 import {useRouter} from "next/navigation";
-import { useCookies } from "react-cookie"
 
 export default  function Login() {
     const router = useRouter();
@@ -26,7 +25,7 @@ export default  function Login() {
         try {
           const response = await axios.post("http://localhost:3000/api/users/login", formData);
           console.log("User logged in:", response.data);
-            router.push("/todo");
+          router.push("/todo");
           // Redirect to a success page or handle as needed
         } catch (error: any) {
           console.error("Error logging in:", error.response?.data || error.message);

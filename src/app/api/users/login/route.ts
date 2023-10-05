@@ -36,9 +36,6 @@ export async function  POST(req: NextRequest) {
         }
         //create token
         const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET!, {expiresIn: "1h"})
-
-        cookies().set('ID', existingUser.id)
-
         
         const response = NextResponse.json({
             message: "Login successful",
@@ -49,6 +46,8 @@ export async function  POST(req: NextRequest) {
         response.cookies.set("token", token, {
             httpOnly: true, 
           })
+
+          response.cookies.set('username', username);
 
         return response;
     } catch (error: any) {
