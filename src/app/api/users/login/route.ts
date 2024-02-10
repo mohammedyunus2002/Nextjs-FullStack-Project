@@ -2,13 +2,33 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from '@prisma/client'; 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { cookies } from 'next/headers'
+
+// import Cors from 'cors'
+
+// const cors = Cors({
+//   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+//   origin: "*",
+//   optionsSuccessStatus: 200,
+// });
+
+// async function runMiddleware(req: NextRequest, res: NextResponse, fn: Function) {
+//   return new Promise<void>((resolve, reject) => {
+//     fn(req, res, (result: any) => {
+//       if (result instanceof Error) {
+//         return reject(result);
+//       }
+//       return resolve();
+//     });
+//   });
+// }
 
 
-const prisma = new PrismaClient();
+export async function  POST(req: NextRequest, res: NextResponse) {
+  // await runMiddleware(req, res, cors)
 
-export async function  POST(req: NextRequest) {
+    const prisma = new PrismaClient();
     try {
+
         const { username, password } = await req.json();
 
         const existingUser = await prisma.user.findFirst({
@@ -51,6 +71,6 @@ export async function  POST(req: NextRequest) {
 
         return response;
     } catch (error: any) {
-            return NextResponse.json({error: error.message}, {status: 500})
-    }
+      return NextResponse.json({error: error.message}, {status: 500})
+    } 
 }

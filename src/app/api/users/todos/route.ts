@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
+  const prisma = new PrismaClient();
+
   try {
     const { title, content } = await req.json();
 
@@ -44,6 +45,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
 }
 
 export async function GET() {
+  const prisma = new PrismaClient();
+
   try {
     const todos = await prisma.task.findMany();
 
@@ -58,6 +61,8 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  const prisma = new PrismaClient();
+
   try {
     const { newTitle, newContent, todoId } = await req.json();
 
@@ -97,6 +102,8 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const prisma = new PrismaClient();
+
   try {
     const { todoId } = await req.json();
 
